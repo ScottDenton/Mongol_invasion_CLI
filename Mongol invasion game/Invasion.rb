@@ -1,10 +1,15 @@
-$mongol_horsemen = 50000
+$mongol_horsemen = 40000
 $mongol_lances = 10000
-$total_mongols = $mongol_horsemen + $mongol_lances
+def mongols_total
+  $total_mongols = $mongol_horsemen + $mongol_lances
+end
 
 $enemy_soldiers = 150000
 $enemy_archers = 50000
-$enemy_total = $enemy_soldiers + $enemy_archers
+
+def enemy_total
+  $total_enemy = $enemy_soldiers + $enemy_archers
+end
 
 
 def welcome
@@ -37,9 +42,10 @@ def opening_scene
   puts "pike and a sword. Exceptional at breaking through the enemy ranks..."
   puts "if they can get close enough."
   puts "\n"
+
   puts"""
 The enemy consists of #{$enemy_soldiers} foot soldiers and #{$enemy_archers} archers.
-With a total army of #{$enemy_total}, you will be vastly outnumbered and will have to
+With a total army of #{enemy_total}, you will be vastly outnumbered and will have to
 rely on clever tactics and skill if you are to survive.
 """
 options
@@ -94,22 +100,55 @@ def charge
   puts "\n"
   puts "Your horeseman use the advantage of their mighty bows and stike the enemy foot soldiers"
   puts "before they even reach the enemy lines."
-    # each mongol horeseman kills one enemy soldier
-  puts "The initial volley kills #{$mongol_lances} enemy soldiers, leaving #{$enemy_soldiers - $mongol_lances} still on the field of battle."
+# each mongol horeseman kills one enemy soldier
+  puts "Your horseman each release 3 or 4 arrows before they reached the enemy lines"
+  puts "The initial vollies kill #{$mongol_horsemen} enemy soldiers, leaving #{$enemy_soldiers - $mongol_horsemen} still on the field of battle."
   puts "\n"
 #calculates the remaining enemy soldiers
   $enemy_soldiers = $enemy_soldiers - $mongol_horsemen
 
-if $enemy_archers / 4 < $mongol_lances
-  puts "As your army reaches the enemy lines their archers let loose, taking down #{$enemy_archers / 4} of your Lancers "
-  $mongol_lances = $mongol_lances - ($enemy_archers / 4)
-else
-  horseman_lost = ($mongol_lances - ($enemy_archers / 4)).abs
-  puts "The enemy had too many archers and you lost all #{$mongol_lances} of your Lancers and #{horseman_lost} horesman."
-  $mongol_horsemen -= horseman_lost
-  $mongol_lances = 0
-  puts "Horesman left = #{$mongol_horsemen}"
+#armies initially collide
+  if $enemy_archers / 4 < $mongol_lances
+    puts "As your army reaches the enemy lines their archers let loose, taking down #{$enemy_archers / 4} of your Lancers "
+    $mongol_lances -= ($enemy_archers / 4)
+  else
+    horseman_lost = ($mongol_lances - ($enemy_archers / 4)).abs
+    puts "The enemy had too many archers and you lost all #{$mongol_lances} of your Lancers and #{horseman_lost} horseman before they even reached the enemies lines."
+    $mongol_horsemen -= horseman_lost
+    $mongol_lances = 0
+  end
+
+puts "\n"
+puts "Now that the two armies have met, your remaining forces start hacking their way through the enemy."
+
+# if you have any lancers remaining
+if $mongol_lances > 0
+  puts "Your lancers crash through the enemy front lines, each taking 8 enemy down before they too fall"
+  if $enemy_soldiers >  $mongol_lances * 8
+    $enemy_soldiers = $enemy_soldiers -  $mongol_lances * 8
+    $mongol_lances = 0
+
+  else
+    $mongol_lances -= ($enemy_soldiers/8)
+    archers_lost = $enemy_soldiers - ($mongol_lances * 8)
+    $enemy_archers -= archers_lost
+    $enemy_soldiers = 0
+  end
 end
+
+#after lances attack (if any) your horseman go in
+puts "mongol horseman: #{$mongol_horsemen}"
+puts "enemy soldiers: #{$enemy_soldiers}"
+puts "enemy archers: #{$enemy_archers}"
+puts "\n"
+puts "Your reamining Mongol Horsemen reach the enemy lines."
+puts "Your horsemen have an immediate advantage over the enemy foot soldiers."
+puts "Each of your #{$mongol_horsemen} mongol horseman takes 3 enemy soldiers with him before he falls."
+$enemy_soldiers -= ($mongol_horsemen *3)
+puts "leaving #{$enemy_soldiers} enemy soldiers left"
+
+
+
 
   # remaining
 end
@@ -128,5 +167,13 @@ def failure
   puts "Genghis was displeased by your disobeiance."
   puts "As a result he killed you and your entire family to make an example."
   puts "The crows and vulchurs will feast for days on your carcass"
+  exit(0)
+end
+
+def defeat
+  puts "You lost all your soldiers"
+  puts "You have shamed Genghis and your entire nation"
+  puts "Fortunately for you, you died with your men"
+  puts "You lose"
   exit(0)
 end
