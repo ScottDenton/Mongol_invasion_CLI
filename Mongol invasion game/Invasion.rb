@@ -6,10 +6,11 @@ end
 
 $enemy_soldiers = 150000
 $enemy_archers = 50000
-
 def enemy_total
   $total_enemy = $enemy_soldiers + $enemy_archers
 end
+
+$harass_counter = 0
 
 
 def welcome
@@ -60,6 +61,8 @@ Do you
   - Harass their lines with your archers
   - Try and attack their flank and catch them off guard
   - Run away like a coward
+
+  REMEMBER: The enemy aren't fools. The more you use the same strategy the quicker they will learn to counter it and the less effective it will be.
   """
   print "> "
   option = $stdin.gets.chomp
@@ -76,6 +79,28 @@ Do you
 end
 
 def remaining
+  if $mongol_horsemen < 0
+    $mongol_horsemen = 0
+  end
+  if $mongol_lances < 0
+    $mongol_lances = 0
+  end
+  if $enemy_soldiers < 0
+    $enemy_soldiers = 0
+  end
+  if $enemy_archers < 0
+    $enemy_archers = 0
+  end
+
+  if enemy_total == 0
+    victory
+  end
+
+  if mongols_total == 0
+    defeat
+  end
+
+
   puts "\n"
   puts "You now have: "
   puts "#{$mongol_horsemen} horeseman left."
@@ -97,12 +122,12 @@ end
 def charge
   puts "\n"
   if $mongol_lances > 0
-    puts "You decided to charge the enemy head on, with your Lancers up front,"
-    puts "followed by the remaining horesemen, with their bows drawn and ready."
+    puts "You decided to charge the enemy head on, with your Lancers up front leading the way."
+
   else
     puts "Your Mongol Horesmen charge the enemy head on with the bows drawn and ready."
   end
-
+if $mongol_horsemen > 0
   puts "\n"
   puts "Your horeseman use the advantage of their mighty bows and stike the enemy foot soldiers"
   puts "before they even reach the enemy lines."
@@ -111,6 +136,7 @@ def charge
   puts "The initial vollies kill #{$mongol_horsemen} enemy soldiers, leaving #{$enemy_soldiers - $mongol_horsemen} still on the field of battle."
   puts "Now that your Mongol Warriors have reached the enemy, how will they fare ?"
   puts "\n"
+end
 #calculates the remaining enemy soldiers
   $enemy_soldiers = $enemy_soldiers - $mongol_horsemen
 
@@ -120,11 +146,16 @@ def charge
     $mongol_lances -= ($enemy_archers / 4)
   elsif $mongol_lances == 0
     horseman_lost = ($mongol_lances - ($enemy_archers / 4)).abs
+
     puts "You lost #{horseman_lost} horseman as they came into range of the enemy archers."
     $mongol_horsemen -= horseman_lost
     $mongol_lances = 0
   else
-    horseman_lost = ($mongol_lances - ($enemy_archers / 4)).abs
+    if $mongol_horsemen > 0
+      horseman_lost = ($mongol_lances - ($enemy_archers / 4)).abs
+    else
+       horseman_lost = 0
+     end
     puts "The enemy had too many archers and you lost all #{$mongol_lances} of your Lancers and #{horseman_lost} horseman before they were even close enough to use their lances and swords."
     $mongol_horsemen -= horseman_lost
     $mongol_lances = 0
@@ -208,8 +239,7 @@ $mongol_horsemen -= $enemy_archers / 5
 $enemy_archers -= archers_defeated
 
 if $mongol_horsemen >= 0
-  puts "Congratulations, you have achieved victory. You have #{$mongol_horsemen} soldiers remaining."
-  puts "Will it be enough be enough to keep the great Khan happy."
+  victory
 else
   puts "Your remaining forces would have made Genghis proud but there was just too many of them."
   puts "After all you warriors fell:"
@@ -226,27 +256,53 @@ else
     end
   end
 
-
-puts "\n"
-puts "mongol horseman: #{$mongol_horsemen}"
-puts "enemy soldiers: #{$enemy_soldiers}"
-puts "enemy archers: #{$enemy_archers}"
-puts "\n"
-
-
-
-
-  # remaining
+  remaining
 end
 
 def harass
   puts "You decided to harass the enemy with your archers"
+  puts "A wise move considering the speed and range advantage your horesman have over the enemy."
+  puts "Keeping your Lancers safe, you send your horseman towards the enemy, keeping just out of range or their archers."
+
+  # Work out how many horseman killed based on how many times strategy used.
+  if $harass_counter <= 1
+    soldiers_killed = ($mongol_horsemen / 5).to_i
+    horseman_killed = ($mongol_horsemen * 0.01).to_i
+  elsif $harass_counter == 2
+    soldiers_killed = ($mongol_horsemen / 10).to_i
+    horseman_killed = ($mongol_horsemen * 0.07).to_i
+  elsif $harass_counter == 3
+    soldiers_killed = ($mongol_horsemen / 15).to_i
+    horseman_killed = ($enemy_archers/ 2).to_i
+    $mongol_horsemen -= horseman_killed
+    puts "Did you not think they would figure out what you were doing sooner or later."
+    puts "This time they were ready for you. Your horseman were engulfed and you lost #{horseman_killed} horeseman."
+
+     remaining
+  end
+
+  puts "You horseman release a wave of arrows straight at the enemy foot soldiers, killing #{soldiers_killed}."
+  $enemy_soldiers -= soldiers_killed
+  puts "\n"
+
+  puts "The enemy got a few lucky shots of killing #{horseman_killed} of your horseman as some got a little too close."
+
+  $mongol_horsemen -= horseman_killed
+
+  $harass_counter += 1
+
   remaining
 end
 
 def attack_flank
   puts "You attacked their flank"
   remaining
+end
+
+def victory
+  puts "Congratulations, you have achieved victory. You have #{$mongol_horsemen} soldiers remaining."
+  puts "Will it be enough be enough to keep the great Khan happy."
+  exit(0)
 end
 
 def failure
