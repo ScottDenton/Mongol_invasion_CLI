@@ -150,7 +150,7 @@ if $mongol_horsemen > 0
   end
   else
     defeat
-end 
+end
 
 # if you have any lancers remaining
 if $mongol_lances > 0
@@ -177,9 +177,9 @@ puts "Your horsemen have an immediate advantage over the enemy foot soldiers."
 puts "Each of your #{$mongol_horsemen} mongol horseman takes 3 enemy soldiers with him before he falls."
 puts "\n"
 #calculate remaining soldiers left on each side after initial meeting.
-  soldiers_left = $enemy_soldiers
-  $enemy_soldiers -= ($mongol_horsemen *3)
-  $mongol_horsemen -= soldiers_left /3
+   soldiers_left = $enemy_soldiers
+   $enemy_soldiers -= ($mongol_horsemen *3)
+   $mongol_horsemen -= (soldiers_left / 3)
 
   if $mongol_horsemen <= 0
     puts "Unfortunately the enemy was just too many."
@@ -203,8 +203,8 @@ puts "\n"
 puts "Retreat is no longer an option, your remaining forces push on attacking the enemy wildly."
 puts "\n"
 archers_defeated = $mongol_horsemen * 5
-$mongol_horsemen -= $enemy_soldiers /3
-$mongol_horsemen -= $enemy_archers /5
+$mongol_horsemen -= $enemy_soldiers / 3
+$mongol_horsemen -= $enemy_archers / 5
 $enemy_archers -= archers_defeated
 
 if $mongol_horsemen >= 0
